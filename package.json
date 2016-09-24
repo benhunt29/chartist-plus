@@ -22,5 +22,8 @@
   "homepage": "https://github.com/benhunt29/chartist-plus#readme",
   "dependencies": {
     "bower": "^1.7.9"
-  }
+  },
+ "engines" : {
+   "node" : ">=6.0"
+ }
 }
