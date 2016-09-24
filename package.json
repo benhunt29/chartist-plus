@@ -4,8 +4,7 @@
   "description": "a wrapper package for chartist.js",
   "main": "chartist-plus.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "install": "bower install"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -21,9 +20,9 @@
   },
   "homepage": "https://github.com/benhunt29/chartist-plus#readme",
   "dependencies": {
-    "bower": "^1.7.9",
     "chartist": "^0.9.8",
-    "chartist-plugin-axistitle": "0.0.1"
+    "chartist-plugin-axistitle": "0.0.1",
+    "chartist-plugin-zoom": "^0.2.2"
   },
   "engines": {
     "node": ">=6.0"

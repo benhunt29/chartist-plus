@@ -1,10 +1,9 @@
-// const Chartist = require('./bower_components/chartist/dist/chartist.min.js');
-// const chartistPluginAxisTitle = require('./bower_components/chartist-plugin-axistitle/dist/chartist-plugin-axistitle.min.js');
-// const chartistPluginTooltip = require('./bower_components/chartist-plugin-tooltip/dist/chartist-plugin-tooltip.min.js');
-// const chartistPluginZoom = require('./bower_components/chartist-plugin-zoom/dist/chartist-plugin-zoom.min.js');
-
 const Chartist = require('chartist');
-const chartistAxisTitle = require('chartist-plugin-axistitle');
+// this is a necessary hack to allow plugins to be tacked on to the Chartist object
+global.Chartist = Chartist;
+require('chartist-plugin-axistitle');
+require('chartist-plugin-tooltip');
+require('chartist-plugin-zoom');
 var ChartistPlus = {
     BarChart: function (selector, data, options = {}, responsiveOptions, pluginOptions) {
         options.plugins = options.plugins || [];
