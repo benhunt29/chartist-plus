@@ -19,6 +19,9 @@
     "tests"
   ],
   "dependencies": {
-    "chartist": "^0.9.8"
+    "chartist": "^0.9.8",
+    "chartist-plugin-tooltip": "^0.0.16",
+    "chartist-plugin-axistitle": "^0.1.0",
+    "chartist-plugin-zoom": "^0.2.2"
   }
 }
