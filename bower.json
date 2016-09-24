@@ -1,0 +1,24 @@
+{
+  "name": "chartist-plus",
+  "description": "a wrapper package for chartist.js",
+  "main": "chartist-plus.js",
+  "authors": [
+    "Ben Hunt"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "chartist"
+  ],
+  "homepage": "https://github.com/benhunt29/chartist-plus",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "chartist": "^0.9.8"
+  }
+}

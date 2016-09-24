@@ -1,0 +1,25 @@
+{
+  "name": "chartist-plus",
+  "version": "1.0.0",
+  "description": "a wrapper package for chartist.js",
+  "main": "chartist-plus.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/benhunt29/chartist-plus.git"
+  },
+  "keywords": [
+    "chartist"
+  ],
+  "author": "Ben Hunt",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/benhunt29/chartist-plus/issues"
+  },
+  "homepage": "https://github.com/benhunt29/chartist-plus#readme",
+  "dependencies": {
+    "bower": "^1.7.9"
+  }
+}
