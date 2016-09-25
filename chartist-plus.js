@@ -6,14 +6,29 @@ require('chartist-plugin-tooltips');
 require('chartist-plugin-zoom');
 var ChartistPlus = {
     BarChart: function (selector, data, options = {}, responsiveOptions, pluginOptions) {
+
+        options.chartPadding = options.chartPadding ||
+            {
+                top: 15,
+                right: 15,
+                bottom: 15,
+                left: 15
+            };
+
+        options.classNames.bar = 'ct-bar-wide';
+
         options.plugins = options.plugins || [];
-            options.plugins.push(chartistAxisTitle({
+        var existingPlugins = options.plugins.map(function(plugin){
+            return plugin.name;
+        });
+        if (existingPlugins.indexOf('ctAxisTitle') < 0) {
+            options.plugins.push(Chartist.plugins.ctAxisTitle({
                 axisX: {
                     axisTitle: data.xAxisLabel || '',
                     axisClass: 'ct-axis-title',
                     offset: {
                         x: 0,
-                        y: 30
+                        y: 40
                     },
                     textAnchor: 'middle'
                 },
@@ -22,12 +37,13 @@ var ChartistPlus = {
                     axisClass: 'ct-axis-title',
                     offset: {
                         x: 0,
-                        y: -5
+                        y: 10
                     },
                     textAnchor: 'middle',
-                    flipTitle: false
+                    flipTitle: true
                 }
             }));
+        }
 
         return new Chartist.Bar(selector, data, options)
     }
