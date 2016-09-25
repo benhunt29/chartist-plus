@@ -1,8 +1,8 @@
-const Chartist = require('chartist');
+var Chartist = require('chartist');
 // this is a necessary hack to allow plugins to be tacked on to the Chartist object
 global.Chartist = Chartist;
 require('chartist-plugin-axistitle');
-require('chartist-plugin-tooltip');
+require('chartist-plugin-tooltips');
 require('chartist-plugin-zoom');
 var ChartistPlus = {
     BarChart: function (selector, data, options = {}, responsiveOptions, pluginOptions) {
