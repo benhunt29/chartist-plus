@@ -166,9 +166,9 @@
   fill-opacity: 0.1;
 }
 
-.ct-bar, .ct-bar-wide {
+.ct-bar {
   fill: none;
-  stroke-width: 10px;
+  stroke-width: 25px;
 }
 
 .ct-slice-donut {
@@ -176,7 +176,7 @@
   stroke-width: 60px;
 }
 
-.ct-series-a .ct-point, .ct-series-a .ct-line, .ct-series-a .ct-bar, .ct-series-a .ct-bar-wide, .ct-series-a .ct-slice-donut {
+.ct-series-a .ct-point, .ct-series-a .ct-line, .ct-series-a .ct-bar, .ct-series-a .ct-slice-donut {
   stroke: #d70206;
 }
 
@@ -184,7 +184,7 @@
   fill: #d70206;
 }
 
-.ct-series-b .ct-point, .ct-series-b .ct-line, .ct-series-b .ct-bar, .ct-series-b .ct-bar-wide, .ct-series-b .ct-slice-donut {
+.ct-series-b .ct-point, .ct-series-b .ct-line, .ct-series-b .ct-bar, .ct-series-b .ct-slice-donut {
   stroke: #f05b4f;
 }
 
@@ -192,7 +192,7 @@
   fill: #f05b4f;
 }
 
-.ct-series-c .ct-point, .ct-series-c .ct-line, .ct-series-c .ct-bar, .ct-series-c .ct-bar-wide, .ct-series-c .ct-slice-donut {
+.ct-series-c .ct-point, .ct-series-c .ct-line, .ct-series-c .ct-bar, .ct-series-c .ct-slice-donut {
   stroke: #f4c63d;
 }
 
@@ -200,7 +200,7 @@
   fill: #f4c63d;
 }
 
-.ct-series-d .ct-point, .ct-series-d .ct-line, .ct-series-d .ct-bar, .ct-series-d .ct-bar-wide, .ct-series-d .ct-slice-donut {
+.ct-series-d .ct-point, .ct-series-d .ct-line, .ct-series-d .ct-bar, .ct-series-d .ct-slice-donut {
   stroke: #d17905;
 }
 
@@ -208,7 +208,7 @@
   fill: #d17905;
 }
 
-.ct-series-e .ct-point, .ct-series-e .ct-line, .ct-series-e .ct-bar, .ct-series-e .ct-bar-wide, .ct-series-e .ct-slice-donut {
+.ct-series-e .ct-point, .ct-series-e .ct-line, .ct-series-e .ct-bar, .ct-series-e .ct-slice-donut {
   stroke: #453d3f;
 }
 
@@ -216,7 +216,7 @@
   fill: #453d3f;
 }
 
-.ct-series-f .ct-point, .ct-series-f .ct-line, .ct-series-f .ct-bar, .ct-series-f .ct-bar-wide, .ct-series-f .ct-slice-donut {
+.ct-series-f .ct-point, .ct-series-f .ct-line, .ct-series-f .ct-bar, .ct-series-f .ct-slice-donut {
   stroke: #59922b;
 }
 
@@ -224,7 +224,7 @@
   fill: #59922b;
 }
 
-.ct-series-g .ct-point, .ct-series-g .ct-line, .ct-series-g .ct-bar, .ct-series-g .ct-bar-wide, .ct-series-g .ct-slice-donut {
+.ct-series-g .ct-point, .ct-series-g .ct-line, .ct-series-g .ct-bar, .ct-series-g .ct-slice-donut {
   stroke: #0544d3;
 }
 
@@ -232,7 +232,7 @@
   fill: #0544d3;
 }
 
-.ct-series-h .ct-point, .ct-series-h .ct-line, .ct-series-h .ct-bar, .ct-series-h .ct-bar-wide, .ct-series-h .ct-slice-donut {
+.ct-series-h .ct-point, .ct-series-h .ct-line, .ct-series-h .ct-bar, .ct-series-h .ct-slice-donut {
   stroke: #6b0392;
 }
 
@@ -240,7 +240,7 @@
   fill: #6b0392;
 }
 
-.ct-series-i .ct-point, .ct-series-i .ct-line, .ct-series-i .ct-bar, .ct-series-i .ct-bar-wide, .ct-series-i .ct-slice-donut {
+.ct-series-i .ct-point, .ct-series-i .ct-line, .ct-series-i .ct-bar, .ct-series-i .ct-slice-donut {
   stroke: #f05b4f;
 }
 
@@ -248,7 +248,7 @@
   fill: #f05b4f;
 }
 
-.ct-series-j .ct-point, .ct-series-j .ct-line, .ct-series-j .ct-bar, .ct-series-j .ct-bar-wide, .ct-series-j .ct-slice-donut {
+.ct-series-j .ct-point, .ct-series-j .ct-line, .ct-series-j .ct-bar, .ct-series-j .ct-slice-donut {
   stroke: #dda458;
 }
 
@@ -256,7 +256,7 @@
   fill: #dda458;
 }
 
-.ct-series-k .ct-point, .ct-series-k .ct-line, .ct-series-k .ct-bar, .ct-series-k .ct-bar-wide, .ct-series-k .ct-slice-donut {
+.ct-series-k .ct-point, .ct-series-k .ct-line, .ct-series-k .ct-bar, .ct-series-k .ct-slice-donut {
   stroke: #eacf7d;
 }
 
@@ -264,7 +264,7 @@
   fill: #eacf7d;
 }
 
-.ct-series-l .ct-point, .ct-series-l .ct-line, .ct-series-l .ct-bar, .ct-series-l .ct-bar-wide, .ct-series-l .ct-slice-donut {
+.ct-series-l .ct-point, .ct-series-l .ct-line, .ct-series-l .ct-bar, .ct-series-l .ct-slice-donut {
   stroke: #86797d;
 }
 
@@ -272,7 +272,7 @@
   fill: #86797d;
 }
 
-.ct-series-m .ct-point, .ct-series-m .ct-line, .ct-series-m .ct-bar, .ct-series-m .ct-bar-wide, .ct-series-m .ct-slice-donut {
+.ct-series-m .ct-point, .ct-series-m .ct-line, .ct-series-m .ct-bar, .ct-series-m .ct-slice-donut {
   stroke: #b2c326;
 }
 
@@ -280,7 +280,7 @@
   fill: #b2c326;
 }
 
-.ct-series-n .ct-point, .ct-series-n .ct-line, .ct-series-n .ct-bar, .ct-series-n .ct-bar-wide, .ct-series-n .ct-slice-donut {
+.ct-series-n .ct-point, .ct-series-n .ct-line, .ct-series-n .ct-bar, .ct-series-n .ct-slice-donut {
   stroke: #6188e2;
 }
 
@@ -288,7 +288,7 @@
   fill: #6188e2;
 }
 
-.ct-series-o .ct-point, .ct-series-o .ct-line, .ct-series-o .ct-bar, .ct-series-o .ct-bar-wide, .ct-series-o .ct-slice-donut {
+.ct-series-o .ct-point, .ct-series-o .ct-line, .ct-series-o .ct-bar, .ct-series-o .ct-slice-donut {
   stroke: #a748ca;
 }
 
@@ -770,8 +770,4 @@
   position: absolute;
   top: 0;
   left: 0;
-}
-
-.ct-bar-wide {
-  stroke-width: 25px;
 }

@@ -9,7 +9,7 @@ var sassOptions = {
     includePaths: 'node_modules/chartist/dist/scss'
 };
 
-gulp.task('sass', function() {
+gulp.task('default', function() {
     return gulp.src('./scss/**/*.scss')
         .pipe(sass(sassOptions))
         .pipe(gulp.dest('.'))
