@@ -22,7 +22,7 @@
   "dependencies": {
     "chartist": "^0.9.8",
     "chartist-plugin-axistitle": "0.0.1",
-    "chartist-plugin-tooltip": "0.0.11",
+    "chartist-plugin-tooltips": "0.0.17",
     "chartist-plugin-zoom": "^0.2.2"
   },
   "engines": {
