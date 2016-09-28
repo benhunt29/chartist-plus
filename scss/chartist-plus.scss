@@ -1,8 +1,19 @@
 //@import './node_modules/chartist/scss/chartist.scss';
-@import "variables";
+@import "variables/variables";
 @import "chartist";
 
 .ct-label-edit {
   width: 65%;
   height: 50%;
 }
+
+  @for $i from 0 to length($ct-series-names) {
+    .#{$ct-class-series}-#{nth($ct-series-names, $i + 1)} .ct-bar-histogram {
+      $color: nth($ct-series-colors, $i + 1);
+
+      //@include ct-chart-series-color($color);
+      stroke-width: 1px;
+      fill: $color;
+    }
+
+  }

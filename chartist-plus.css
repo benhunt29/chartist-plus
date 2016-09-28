@@ -168,7 +168,7 @@
 
 .ct-bar {
   fill: none;
-  stroke-width: 25px;
+  stroke-width: 10px;
 }
 
 .ct-slice-donut {
@@ -770,4 +770,84 @@
   position: absolute;
   top: 0;
   left: 0;
+}
+
+.ct-label-edit {
+  width: 65%;
+  height: 50%;
+}
+
+.ct-series-a .ct-bar-histogram {
+  stroke-width: 1px;
+  fill: #d70206;
+}
+
+.ct-series-b .ct-bar-histogram {
+  stroke-width: 1px;
+  fill: #f05b4f;
+}
+
+.ct-series-c .ct-bar-histogram {
+  stroke-width: 1px;
+  fill: #f4c63d;
+}
+
+.ct-series-d .ct-bar-histogram {
+  stroke-width: 1px;
+  fill: #d17905;
+}
+
+.ct-series-e .ct-bar-histogram {
+  stroke-width: 1px;
+  fill: #453d3f;
+}
+
+.ct-series-f .ct-bar-histogram {
+  stroke-width: 1px;
+  fill: #59922b;
+}
+
+.ct-series-g .ct-bar-histogram {
+  stroke-width: 1px;
+  fill: #0544d3;
+}
+
+.ct-series-h .ct-bar-histogram {
+  stroke-width: 1px;
+  fill: #6b0392;
+}
+
+.ct-series-i .ct-bar-histogram {
+  stroke-width: 1px;
+  fill: #f05b4f;
+}
+
+.ct-series-j .ct-bar-histogram {
+  stroke-width: 1px;
+  fill: #dda458;
+}
+
+.ct-series-k .ct-bar-histogram {
+  stroke-width: 1px;
+  fill: #eacf7d;
+}
+
+.ct-series-l .ct-bar-histogram {
+  stroke-width: 1px;
+  fill: #86797d;
+}
+
+.ct-series-m .ct-bar-histogram {
+  stroke-width: 1px;
+  fill: #b2c326;
+}
+
+.ct-series-n .ct-bar-histogram {
+  stroke-width: 1px;
+  fill: #6188e2;
+}
+
+.ct-series-o .ct-bar-histogram {
+  stroke-width: 1px;
+  fill: #a748ca;
 }
