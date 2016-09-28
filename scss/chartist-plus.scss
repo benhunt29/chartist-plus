@@ -14,6 +14,7 @@
       //@include ct-chart-series-color($color);
       stroke-width: 1px;
       fill: $color;
+      width: $ct-histogram-bar-width;
     }
 
   }

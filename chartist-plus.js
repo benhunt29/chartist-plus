@@ -9,14 +9,18 @@ function labelInput(chart) {
     var input = document.createElement('input');
     input.className = 'ct-label-edit ct-label ct-horizontal';
     input.addEventListener('keyup', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
         if (e.which === 13) {
             this.removeEventListener(e.type, arguments.callee);
-            chart.options.high = 15;
-            console.log(chart.data);
+            // chart.options.high = 15;
+            chart.options.high = this.value;
+            // console.log(chart.getHighLow());
+            console.log(chart.options.axisX.labelInterpolationFnc());
             chart.update(chart.data, chart.options);
+            console.log(chart.options);
+            console.log(chart.getBounds());
         }
-        e.stopPropagation();
-        e.preventDefault();
     });
     input.addEventListener('blur', function(e) {
         this.removeEventListener(e.type, arguments.callee);
@@ -28,6 +32,7 @@ function labelInput(chart) {
 
 var ChartistPlus = {
     Histogram: function (selector, data, options = {}, responsiveOptions, pluginOptions) {
+
         options.chartPadding = options.chartPadding ||
             {
                 top: 15,
@@ -35,6 +40,12 @@ var ChartistPlus = {
                 bottom: 15,
                 left: 15
             };
+
+        options.showLine = false;
+        options.axisX = {
+            type: Chartist.AutoScaleAxis,
+            onlyInteger: false
+        }
 
         options.plugins = options.plugins || [];
         var existingPlugins = options.plugins.map(function(plugin){
@@ -73,6 +84,7 @@ var ChartistPlus = {
         var histogram =  new Chartist.Line(selector, data, options).on('draw', function(context){
             if (context.type === 'label') {
                 if (context.index === 0 || context.index === context.axis.ticks.length - 1) {
+                    context.element._node.classList.add('editable-label');
                     context.element._node.addEventListener('click', function(e) {
                         this.removeChild(this.children[0]);
                         this.appendChild(labelInput(histogram));
@@ -85,8 +97,8 @@ var ChartistPlus = {
                     x: context.x + context.axisX.chartRect.padding.right,
                     y: context.y,
                     width: 5,
-                    height: context.axisY.chartRect.y1 - context.axisY.chartRect.padding.bottom - context.y
-                }, 'ct-bar');
+                    height: Math.max(context.axisY.chartRect.y1  - context.y, 0)
+                }, 'ct-bar ct-bar-histogram');
                 context.element.replace(rectangle);
             }
         });
