@@ -5,28 +5,49 @@ require('chartist-plugin-axistitle');
 require('chartist-plugin-tooltips');
 require('chartist-plugin-zoom');
 
-function labelInput(chart) {
+function labelInput(chart, labelClass) {
     var input = document.createElement('input');
-    input.className = 'ct-label-edit ct-label ct-horizontal';
-    input.addEventListener('keyup', function(e) {
+    input.setAttribute('type', 'number');
+    input.className = labelClass + ' ct-label-edit ct-label ct-horizontal';
+    function enterHandler(e) {
         e.preventDefault();
         e.stopPropagation();
-        if (e.which === 13) {
-            this.removeEventListener(e.type, arguments.callee);
-            // chart.options.high = 15;
-            chart.options.high = this.value;
-            // console.log(chart.getHighLow());
-            console.log(chart.options.axisX.labelInterpolationFnc());
-            chart.update(chart.data, chart.options);
-            console.log(chart.options);
-            console.log(chart.getBounds());
+        if (e.which === 13 && this.value) {
+            e.target.removeEventListener(e.type, enterHandler);
+            e.target.removeEventListener('blur', blurHandler);
+            updateAxis(this);
         }
-    });
-    input.addEventListener('blur', function(e) {
-        this.removeEventListener(e.type, arguments.callee);
+    }
+
+    function blurHandler(e) {
+        this.removeEventListener(e.type, blurHandler);
         e.stopPropagation();
         e.preventDefault();
-    });
+        if (this.value) {
+            updateAxis(this);
+        }
+    }
+
+    function updateAxis(input) {
+        switch (input.classList[0]) {
+            case 'x-start':
+                chart.options.axisX.low = input.value;
+                break;
+            case 'x-end':
+                chart.options.axisX.high = input.value;
+                break;
+            case 'y-start':
+                chart.options.axisY.low = input.value;
+                break;
+            case 'y-end':
+                chart.options.axisY.high = input.value;
+                break;
+        }
+        chart.update(chart.data, chart.options);
+        console.log(chart.options);
+    }
+    input.addEventListener('keyup', enterHandler);
+    input.addEventListener('blur', blurHandler);
     return input;
 }
 
@@ -84,10 +105,19 @@ var ChartistPlus = {
         var histogram =  new Chartist.Line(selector, data, options).on('draw', function(context){
             if (context.type === 'label') {
                 if (context.index === 0 || context.index === context.axis.ticks.length - 1) {
+                    console.log(context.axis.units.dir);
                     context.element._node.classList.add('editable-label');
                     context.element._node.addEventListener('click', function(e) {
+                        var labelClass = context.axis.units.dir === 'vertical' ? 'y' : 'x';
+                        labelClass += context.index === 0 ? '-start' : '-end';
+                        var blurrableElements = histogram.svg._node.querySelectorAll('.ct-grids, .ct-series');
+                        for (let element of blurrableElements) {
+                            element.setAttribute('filter', 'url("#blur")');
+                        }
+                        this.setAttribute('y', context.axis.chartRect.y1/2);
+                        this.setAttribute('x', context.axis.chartRect.x2/2);
                         this.removeChild(this.children[0]);
-                        this.appendChild(labelInput(histogram));
+                        this.appendChild(labelInput(histogram, labelClass));
                         this.removeEventListener(e.type, arguments.callee);
                     }, false);
                 }
@@ -101,6 +131,14 @@ var ChartistPlus = {
                 }, 'ct-bar ct-bar-histogram');
                 context.element.replace(rectangle);
             }
+        }).on('created', function(context){
+            var defs = context.svg.elem('defs');
+            defs.elem('filter', {
+                id: 'blur'
+            }).elem('feGaussianBlur', {
+                in: 'SourceGraphic',
+                stdDeviation: '2'
+            });
         });
         return histogram;
     },
