@@ -875,3 +875,8 @@
   display: block;
   text-align: center;
 }
+
+.ct-zoom-rect {
+  fill-opacity: 0;
+  stroke: gray;
+}
