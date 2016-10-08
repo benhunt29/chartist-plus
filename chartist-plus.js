@@ -7,10 +7,11 @@
     require('chartist-plugin-tooltips');
     require('chartist-plugin-zoom');
 
-    function labelInput(chart, labelClass) {
+    function labelInput(chart, labelClass, value) {
         var input = document.createElement('input');
         input.setAttribute('type', 'number');
         input.className = labelClass + ' ct-label-edit ct-label ct-horizontal';
+        input.value = value;
         function enterHandler(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -23,6 +24,8 @@
 
         function blurHandler(e) {
             this.removeEventListener(e.type, blurHandler);
+            e.target.removeEventListener('keyup', blurHandler);
+
             e.stopPropagation();
             e.preventDefault();
             updateAxis(this);
@@ -46,7 +49,6 @@
                 }
             }
             chart.update(chart.data, chart.options);
-            console.log(chart.options);
         }
         input.addEventListener('keyup', enterHandler);
         input.addEventListener('blur', blurHandler);
@@ -63,13 +65,17 @@
                     bottom: 15,
                     left: 15
                 };
-
+            var xhighLow = Chartist.getHighLow(data.series, options, 'x')
             options.showLine = false;
             options.axisX = {
                 type: Chartist.AutoScaleAxis,
                 onlyInteger: false,
-                scaleMinSpace: 50
+                scaleMinSpace: 50,
+                high: 1.02*xhighLow.high,
+                low: 0.98*xhighLow.low
             }
+
+            options.axisY = {}
 
             options.plugins = options.plugins || [];
             var existingPlugins = options.plugins.map(function(plugin){
@@ -118,14 +124,13 @@
                     }
                     this.setAttribute('y', context.axis.chartRect.y1/2);
                     this.setAttribute('x', context.axis.chartRect.x2/2);
+                    this.appendChild(labelInput(histogram, labelClass, this.children[0].innerHTML)).focus();
                     this.removeChild(this.children[0]);
-                    this.appendChild(labelInput(histogram, labelClass)).focus();
                     this.removeEventListener(e.type, labelEditHandler);
                 }
 
                 if (context.type === 'label') {
                     if (context.index === 0 || context.index === context.axis.ticks.length - 1) {
-                        console.log(context.axis.units.dir);
                         context.element._node.classList.add('editable-label');
                         context.element._node.addEventListener('click', labelEditHandler, false);
                         context.element._node.addEventListener('touchend', labelEditHandler, false);
@@ -207,9 +212,6 @@
                 if (context.type === 'label') {
                     if (context.index === 0 || context.index === context.axis.ticks.length - 1) {
                         context.element._node.addEventListener('click', function(e) {
-                            // console.log(this.children[0]);
-                            console.log('CLICK');
-                            console.log(e.target);
                             this.removeChild(this.children[0]);
                             this.appendChild(labelInput(lineChart));
                             this.removeEventListener(e.type, arguments.callee);
@@ -217,7 +219,6 @@
                     }
                 }
                 if (context.type === 'point') {
-                    console.log(context);
                     var rectangle = new Chartist.Svg('rect', {
                         x: context.x,
                         y: context.y,
