@@ -23,11 +23,10 @@
         }
 
         function blurHandler(e) {
-            this.removeEventListener(e.type, blurHandler);
-            e.target.removeEventListener('keyup', blurHandler);
-
             e.stopPropagation();
             e.preventDefault();
+            this.removeEventListener(e.type, blurHandler);
+            e.target.removeEventListener('keyup', blurHandler);
             updateAxis(this);
         }
 
@@ -48,10 +47,14 @@
                         break;
                 }
             }
+            // override zoom plugin if currently enabled
+            if (resetFnc) {
+                resetFnc && resetFnc();
+            }
             chart.update(chart.data, chart.options);
         }
-        input.addEventListener('keyup', enterHandler);
-        input.addEventListener('blur', blurHandler);
+        input.addEventListener('keyup', enterHandler, false);
+        input.addEventListener('blur', blurHandler, false);
         return input;
     }
 
@@ -103,12 +106,11 @@
                         flipTitle: true
                     }
                 }));
-                // options.plugins.push(Chartist.plugins.zoom({
-                //     onZoom: function (chart, reset) {
-                //         console.log(StoreReset);
-                //         storeReset(reset);
-                //     }
-                // }))
+                options.plugins.push(Chartist.plugins.zoom({
+                    onZoom: function (chart, reset) {
+                        resetFnc = reset;
+                    }
+                }))
             }
 
             var histogram =  new Chartist.Line(selector, data, options).on('draw', function(context){
@@ -131,24 +133,37 @@
 
                 if (context.type === 'label') {
                     if (context.index === 0 || context.index === context.axis.ticks.length - 1) {
-                        context.element._node.classList.add('editable-label');
-                        context.element._node.addEventListener('click', labelEditHandler, false);
-                        context.element._node.addEventListener('touchend', labelEditHandler, false);
+                        var element = context.element._node;
+                        element.classList.add('editable-label');
+                        element.addEventListener('click', labelEditHandler);
+                        // element.addEventListener('touchend', labelEditHandler);
                     }
                 }
                 if (context.type === 'point') {
-                    var rectangle = new Chartist.Svg('rect', {
-                        x: context.x - context.axisX.chartRect.padding.right,
-                        y: context.y,
-                        width: 5,
-                        height: Math.max(context.axisY.chartRect.y1  - context.y, 0)
-                    }, 'ct-bar ct-bar-histogram');
-                    context.element.replace(rectangle);
+                    // prevent drawing bars off the chart
+                    var barX = Math.max(context.x, context.x - context.axisX.chartRect.padding.right);
+                    if (barX > context.axisX.chartRect.x1) {
+                        var rectangle = new Chartist.Svg('rect', {
+                            x: barX,
+                            y: Math.max(context.y, context.axisY.chartRect.padding.top),
+                            // this is set via css
+                            width: 1,
+                            height: Math.max(0, Math.min(context.axisY.chartRect.y1 - context.y, context.axisY.chartRect.y1 - context.axisY.chartRect.padding.top))
+                            // height: context.y
+                        }, 'ct-bar ct-bar-histogram');
+                        context.element.replace(rectangle);
+                    }
                 }
             }).on('created', function(context){
                 var defs = context.svg.elem('defs');
                 defs.elem('filter', {
                     id: 'blur'
+                }).elem('feGaussianBlur', {
+                    in: 'SourceGraphic',
+                    stdDeviation: '2'
+                });
+                defs.elem('zoom-rect', {
+                    id: 'zoom-rect'
                 }).elem('feGaussianBlur', {
                     in: 'SourceGraphic',
                     stdDeviation: '2'
@@ -194,8 +209,7 @@
                 }));
                 options.plugins.push(Chartist.plugins.zoom({
                     onZoom: function (chart, reset) {
-                        console.log(StoreReset);
-                        storeReset(reset);
+                        resetFnc = reset;
                     }
                 }))
             }
