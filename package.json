@@ -23,7 +23,7 @@
     "chartist": "^0.9.8",
     "chartist-plugin-axistitle": "0.0.1",
     "chartist-plugin-tooltips": "0.0.17",
-    "chartist-plugin-zoom": "^0.2.2"
+    "chartist-plugin-zoom": "git+ssh:git@github.com:benhunt29/chartist-plugin-zoom.git"
   },
   "engines": {
     "node": ">=6.0"
