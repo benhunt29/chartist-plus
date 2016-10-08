@@ -866,3 +866,7 @@
   fill: #a748ca;
   width: 25px;
 }
+
+.ct-chart .ct-label.ct-horizontal {
+  text-anchor: middle;
+}

@@ -7,14 +7,18 @@
   height: 50%;
 }
 
-  @for $i from 0 to length($ct-series-names) {
-    .#{$ct-class-series}-#{nth($ct-series-names, $i + 1)} .ct-bar-histogram {
-      $color: nth($ct-series-colors, $i + 1);
+@for $i from 0 to length($ct-series-names) {
+  .#{$ct-class-series}-#{nth($ct-series-names, $i + 1)} .ct-bar-histogram {
+    $color: nth($ct-series-colors, $i + 1);
 
-      //@include ct-chart-series-color($color);
-      stroke-width: 1px;
-      fill: $color;
-      width: $ct-histogram-bar-width;
-    }
-
+    //@include ct-chart-series-color($color);
+    stroke-width: 1px;
+    fill: $color;
+    width: $ct-histogram-bar-width;
   }
+
+}
+
+.ct-chart .ct-label.ct-horizontal {
+  text-anchor: middle;
+}
