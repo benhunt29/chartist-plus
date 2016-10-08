@@ -3,8 +3,10 @@
 @import "chartist";
 
 .ct-label-edit {
-  width: 65%;
-  height: 50%;
+  width: 150%;
+  height: 150%;
+  border: 1px solid rgba(107, 141, 218, 0.48);
+  box-shadow: 0 0 9px 6px rgba(107, 141, 218, 0.48);
 }
 
 @for $i from 0 to length($ct-series-names) {
