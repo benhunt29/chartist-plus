@@ -19,6 +19,8 @@
 
 }
 
-.ct-chart .ct-label.ct-horizontal {
-  text-anchor: middle;
+.ct-chart .ct-label.ct-horizontal.ct-end {
+  transform: translate(-50%,0);
+  display: block;
+  text-align: center;
 }
