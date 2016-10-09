@@ -21,8 +21,8 @@
         }
 
         function enterHandler(e) {
-            // e.preventDefault();
-            // e.stopPropagation();
+            e.preventDefault();
+            e.stopPropagation();
             if (e.which === 13 && this.value) {
                 e.target.removeEventListener(e.type, enterHandler);
                 e.target.removeEventListener('blur', blurHandler);
@@ -31,8 +31,8 @@
         }
 
         function blurHandler(e) {
-            // e.stopPropagation();
-            // e.preventDefault();
+            e.stopPropagation();
+            e.preventDefault();
             this.removeEventListener(e.type, blurHandler);
             e.target.removeEventListener('keyup', enterHandler);
             updateAxis(this);
@@ -129,8 +129,10 @@
             var histogram =  new Chartist.Line(selector, data, options).on('draw', function(context){
 
                 function labelEditHandler(e){
-                    // e.preventDefault();
+                    e.preventDefault();
                     // e.stopPropagation();
+                    this.removeEventListener('click', labelEditHandler);
+                    this.removeEventListener('touchstart', labelEditHandler);
                     var labelClass = context.axis.units.dir === 'vertical' ? 'y' : 'x';
                     labelClass += context.index === 0 ? '-start' : '-end';
                     var blurrableElements = histogram.svg._node.querySelectorAll('.ct-grids, .ct-series');
@@ -143,15 +145,14 @@
                     this.removeChild(this.children[0]);
                     histogram.svg._node.appendChild(this);
                     this.children[0].focus();
-                    this.removeEventListener(e.type, labelEditHandler);
                 }
 
                 if (context.type === 'label') {
                     if (context.index === 0 || context.index === context.axis.ticks.length - 1) {
                         var element = context.element._node;
                         element.classList.add('editable-label');
-                        element.addEventListener('click', labelEditHandler, false);
-                        // element.addEventListener('touchend', labelEditHandler);
+                        element.addEventListener('touchstart', labelEditHandler);
+                        element.addEventListener('click', labelEditHandler);
                     }
                 }
                 if (context.type === 'point') {
