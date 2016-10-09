@@ -82,10 +82,7 @@
                 scaleMinSpace: 50,
                 high: 1.02*xhighLow.high,
                 low: 0.98*xhighLow.low
-            }
-
-            options.axisY = {}
-
+            };
             options.plugins = options.plugins || [];
             var existingPlugins = options.plugins.map(function(plugin){
                 return plugin.name;
@@ -112,14 +109,15 @@
                         flipTitle: true
                     }
                 }));
-                options.plugins.push(Chartist.plugins.zoom({
-                    // onZoom: function (chart, reset) {
-                    //     // resetFnc = reset;
-                    //     resetFnc = function() {
-                    //         chart.update(chart.data, options);
-                    //     }
-                    // }
-                }));
+                options.plugins.push(Chartist.plugins.zoom());
+
+                // TODO - need to figure out how to move "zoom div" out of the way to allow for tooltips to show
+                options.plugins.push(Chartist.plugins.tooltip(
+                    {
+                        pointClass: 'ct-tooltip',
+                        // appendToBody: true
+                    }
+                ));
             }
 
             function reset(chart, options) {
@@ -145,9 +143,6 @@
                     histogram.svg._node.appendChild(this);
                     this.children[0].focus();
                     this.removeEventListener(e.type, labelEditHandler);
-                    this.addEventListener('focus', function(){
-                        console.log('focusssed');
-                    });
                     // for some reason on mobile a resize event gets triggered, need to override this
                     window.removeEventListener('resize', histogram.resizeListener);
                     // this.removeEventListener('touchstart', labelEditHandler);
@@ -170,9 +165,11 @@
                         width: 1,
                         height: Math.max(0, Math.min(context.axisY.chartRect.y1 - context.y, context.axisY.chartRect.y1 - context.axisY.chartRect.padding.top)),
                         'clip-path': 'url(#zoom-mask)',
+                        'ct:value': context.value.y,
+                        'ct:meta': context.meta,
+                        class: 'ct-tooltip'
                     }, 'ct-bar ct-bar-histogram');
                     context.element.replace(rectangle);
-
                 }
             }).on('created', function(context){
                 // double click to reset zoom
