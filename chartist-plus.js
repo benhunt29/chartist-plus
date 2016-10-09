@@ -10,7 +10,7 @@
     function labelInput(chart, labelClass, value) {
 
         var input = document.createElement('input');
-        input.setAttribute('type', 'number');
+        input.setAttribute('type', 'tel');
         input.className = labelClass + ' ct-label-edit ct-label ct-horizontal';
         input.value = value;
 
@@ -21,8 +21,8 @@
         }
 
         function enterHandler(e) {
-            e.preventDefault();
-            e.stopPropagation();
+            // e.preventDefault();
+            // e.stopPropagation();
             if (e.which === 13 && this.value) {
                 e.target.removeEventListener(e.type, enterHandler);
                 e.target.removeEventListener('blur', blurHandler);
@@ -129,10 +129,9 @@
             var histogram =  new Chartist.Line(selector, data, options).on('draw', function(context){
 
                 function labelEditHandler(e){
-                    e.preventDefault();
+                    // e.preventDefault();
                     // e.stopPropagation();
-                    this.removeEventListener('click', labelEditHandler);
-                    this.removeEventListener('touchstart', labelEditHandler);
+
                     var labelClass = context.axis.units.dir === 'vertical' ? 'y' : 'x';
                     labelClass += context.index === 0 ? '-start' : '-end';
                     var blurrableElements = histogram.svg._node.querySelectorAll('.ct-grids, .ct-series');
@@ -145,13 +144,20 @@
                     this.removeChild(this.children[0]);
                     histogram.svg._node.appendChild(this);
                     this.children[0].focus();
+                    this.removeEventListener(e.type, labelEditHandler);
+                    this.addEventListener('focus', function(){
+                        console.log('focusssed');
+                    });
+                    // for some reason on mobile a resize event gets triggered, need to override this
+                    window.removeEventListener('resize', histogram.resizeListener);
+                    // this.removeEventListener('touchstart', labelEditHandler);
                 }
 
                 if (context.type === 'label') {
                     if (context.index === 0 || context.index === context.axis.ticks.length - 1) {
                         var element = context.element._node;
                         element.classList.add('editable-label');
-                        element.addEventListener('touchstart', labelEditHandler);
+                        // element.addEventListener('touchstart', labelEditHandler);
                         element.addEventListener('click', labelEditHandler);
                     }
                 }
