@@ -14,7 +14,7 @@
         input.className = labelClass + ' ct-label-edit ct-label ct-horizontal';
         input.value = value;
 
-        chart.svg._node.querySelector('.chart-area').style.display = 'none';
+        // chart.svg._node.querySelector('.chart-area').style.display = 'none';
         function clearZoom(){
             chart.options.axisX.highLow = null;
             chart.options.axisY.highLow = null;
