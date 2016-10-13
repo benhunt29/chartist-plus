@@ -72,9 +72,9 @@
         this.chartPadding = options.chartPadding ||
             {
                 top: 15,
-                right: 15,
+                right: 20,
                 bottom: 15,
-                left: 15
+                left: 20
             };
         var xhighLow = Chartist.getHighLow(data.series, options, 'x')
         this.showLine = false;
@@ -105,7 +105,7 @@
                     axisClass: 'ct-axis-title',
                     offset: {
                         x: 0,
-                        y: 10
+                        y: 15
                     },
                     textAnchor: 'middle',
                     flipTitle: true
