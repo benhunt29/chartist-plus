@@ -147,20 +147,24 @@
                 element.addEventListener('click', labelEditHandler);
             }
         }
-        if (type === 'histogram' && context.type === 'point') {
+        if (context.type === 'point') {
             // prevent drawing bars off the chart
-            var rectangle = new Chartist.Svg('rect', {
-                x: Math.max(context.x, context.x - context.axisX.chartRect.padding.right),
-                y: Math.max(context.y, context.axisY.chartRect.padding.top),
-                // this is set via css
-                width: 1,
-                height: Math.max(0, Math.min(context.axisY.chartRect.y1 - context.y, context.axisY.chartRect.y1 - context.axisY.chartRect.padding.top)),
-                'clip-path': 'url(#zoom-mask)',
-                'ct:value': context.value.y,
-                'ct:meta': context.meta,
-                class: 'ct-tooltip'
-            }, 'ct-bar ct-bar-histogram');
-            context.element.replace(rectangle);
+            if (type === 'histogram') {
+                var rectangle = new Chartist.Svg('rect', {
+                    x: Math.max(context.x, context.x - context.axisX.chartRect.padding.right),
+                    y: Math.max(context.y, context.axisY.chartRect.padding.top),
+                    // this is set via css
+                    width: 1,
+                    height: Math.max(0, Math.min(context.axisY.chartRect.y1 - context.y, context.axisY.chartRect.y1 - context.axisY.chartRect.padding.top)),
+                    'clip-path': 'url(#zoom-mask)',
+                    'ct:value': context.value.x + ',' + context.value.y,
+                    'ct:meta': context.meta,
+                    class: 'ct-tooltip'
+                }, 'ct-bar ct-bar-histogram');
+                context.element.replace(rectangle);
+            } else {
+                context.element.addClass('ct-tooltip');
+            }
         }
     }
 
