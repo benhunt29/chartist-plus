@@ -985,8 +985,9 @@
 .chartist-tooltip {
   background-color: darkgray;
   color: #ffffff;
+  min-width: .5em;
 }
 
 .chartist-tooltip:before {
-  background-color: darkgray;
+  border-top-color: darkgray;
 }

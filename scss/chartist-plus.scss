@@ -37,8 +37,9 @@
 // tooltip plugin overrrides
 .chartist-tooltip {
   &:before {
-    background-color: darkgray;
+    border-top-color: darkgray;
   }
   background-color: darkgray;
   color: #ffffff;
+  min-width: .5em;
 }
