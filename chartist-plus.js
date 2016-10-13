@@ -64,221 +64,153 @@
         return input;
     }
 
+    function reset(chart, options) {
+        chart.update(chart.data, options);
+    }
+
+    function getDefaultOptions(options, data) {
+        this.chartPadding = options.chartPadding ||
+            {
+                top: 15,
+                right: 15,
+                bottom: 15,
+                left: 15
+            };
+        var xhighLow = Chartist.getHighLow(data.series, options, 'x')
+        this.showLine = false;
+        this.axisX = {
+            type: Chartist.AutoScaleAxis,
+            onlyInteger: false,
+            scaleMinSpace: 50,
+            high: 1.02*xhighLow.high,
+            low: 0.98*xhighLow.low
+        };
+        this.plugins = options.plugins || [];
+        var existingPlugins = this.plugins.map(function(plugin){
+            return plugin.name;
+        });
+        if (existingPlugins.indexOf('ctAxisTitle') < 0) {
+            this.plugins.push(Chartist.plugins.ctAxisTitle({
+                axisX: {
+                    axisTitle: data.xAxisLabel || '',
+                    axisClass: 'ct-axis-title',
+                    offset: {
+                        x: 0,
+                        y: 40
+                    },
+                    textAnchor: 'middle'
+                },
+                axisY: {
+                    axisTitle: data.yAxisLabel || '',
+                    axisClass: 'ct-axis-title',
+                    offset: {
+                        x: 0,
+                        y: 10
+                    },
+                    textAnchor: 'middle',
+                    flipTitle: true
+                }
+            }));
+            this.plugins.push(Chartist.plugins.zoom());
+            this.plugins.push(Chartist.plugins.tooltip( {
+                pointClass: 'ct-tooltip'
+            }));
+        }
+    }
+
+    function customChartDraw(context, chart, type = 'scatter'){
+        function labelEditHandler(e){
+            var chartSvg = context.group._node.parentNode;
+            var labelClass = context.axis.units.dir === 'vertical' ? 'y' : 'x';
+            labelClass += context.index === 0 ? '-start' : '-end';
+            var blurrableElements = chartSvg.querySelectorAll('.ct-grids, .ct-series');
+            for (let element of blurrableElements) {
+                element.setAttribute('filter', 'url("#blur")');
+            }
+            this.setAttribute('y', context.axis.chartRect.y1/2);
+            this.setAttribute('x', context.axis.chartRect.x2/2);
+            this.appendChild(labelInput(chart, labelClass, this.children[0].innerHTML));
+            this.removeChild(this.children[0]);
+            chartSvg.appendChild(this);
+            this.children[0].focus();
+            this.removeEventListener(e.type, labelEditHandler);
+            // for some reason on mobile a resize event gets triggered, need to override this
+            window.removeEventListener('resize', chartSvg.resizeListener);
+            // this.removeEventListener('touchstart', labelEditHandler);
+        }
+
+        if (context.type === 'label') {
+            if (context.index === 0 || context.index === context.axis.ticks.length - 1) {
+                var element = context.element._node;
+                element.classList.add('editable-label');
+                // element.addEventListener('touchstart', labelEditHandler);
+                element.addEventListener('click', labelEditHandler);
+            }
+        }
+        if (type === 'histogram' && context.type === 'point') {
+            // prevent drawing bars off the chart
+            var rectangle = new Chartist.Svg('rect', {
+                x: Math.max(context.x, context.x - context.axisX.chartRect.padding.right),
+                y: Math.max(context.y, context.axisY.chartRect.padding.top),
+                // this is set via css
+                width: 1,
+                height: Math.max(0, Math.min(context.axisY.chartRect.y1 - context.y, context.axisY.chartRect.y1 - context.axisY.chartRect.padding.top)),
+                'clip-path': 'url(#zoom-mask)',
+                'ct:value': context.value.y,
+                'ct:meta': context.meta,
+                class: 'ct-tooltip'
+            }, 'ct-bar ct-bar-histogram');
+            context.element.replace(rectangle);
+        }
+    }
+
+    function customChartCreated(context, chart) {
+        // double click to reset zoom
+        context.svg._node.addEventListener('dblclick', function(){
+            reset(chart, new getDefaultOptions(chart.options, chart.data));
+        });
+        var defs = context.svg.elem('defs');
+        defs.elem('filter', {
+            id: 'blur'
+        }).elem('feGaussianBlur', {
+            in: 'SourceGraphic',
+            stdDeviation: '2'
+        });
+        defs.elem('zoom-rect', {
+            id: 'zoom-rect'
+        }).elem('feGaussianBlur', {
+            in: 'SourceGraphic',
+            stdDeviation: '2'
+        });
+    }
+
     var ChartistPlus = {
         Histogram: function (selector, data, options = {}, responsiveOptions, pluginOptions) {
 
-            options.chartPadding = options.chartPadding ||
-                {
-                    top: 15,
-                    right: 15,
-                    bottom: 15,
-                    left: 15
-                };
-            var xhighLow = Chartist.getHighLow(data.series, options, 'x')
-            options.showLine = false;
-            options.axisX = {
-                type: Chartist.AutoScaleAxis,
-                onlyInteger: false,
-                scaleMinSpace: 50,
-                high: 1.02*xhighLow.high,
-                low: 0.98*xhighLow.low
-            };
-            options.plugins = options.plugins || [];
-            var existingPlugins = options.plugins.map(function(plugin){
-                return plugin.name;
-            });
-            if (existingPlugins.indexOf('ctAxisTitle') < 0) {
-                options.plugins.push(Chartist.plugins.ctAxisTitle({
-                    axisX: {
-                        axisTitle: data.xAxisLabel || '',
-                        axisClass: 'ct-axis-title',
-                        offset: {
-                            x: 0,
-                            y: 40
-                        },
-                        textAnchor: 'middle'
-                    },
-                    axisY: {
-                        axisTitle: data.yAxisLabel || '',
-                        axisClass: 'ct-axis-title',
-                        offset: {
-                            x: 0,
-                            y: 10
-                        },
-                        textAnchor: 'middle',
-                        flipTitle: true
-                    }
-                }));
-                options.plugins.push(Chartist.plugins.zoom());
-
-                // TODO - need to figure out how to move "zoom div" out of the way to allow for tooltips to show
-                options.plugins.push(Chartist.plugins.tooltip(
-                    {
-                        pointClass: 'ct-tooltip',
-                        // appendToBody: true
-                    }
-                ));
-            }
+            var defaultOptions = new getDefaultOptions(options, data);
+            var chart =  new Chartist.Line(selector, data, defaultOptions, responsiveOptions, pluginOptions)
+                .on('draw', function(context){
+                    customChartDraw(context, chart, 'histogram');
+                })
+                .on('created', function(context){
+                    customChartCreated(context, chart);
+                });
+            return chart;
+        },
+        Scatter: function (selector, data, options = {}, responsiveOptions, pluginOptions) {
 
             function reset(chart, options) {
                 chart.update(chart.data, options);
             }
-
-            var histogram =  new Chartist.Line(selector, data, options).on('draw', function(context){
-
-                function labelEditHandler(e){
-                    // e.preventDefault();
-                    // e.stopPropagation();
-
-                    var labelClass = context.axis.units.dir === 'vertical' ? 'y' : 'x';
-                    labelClass += context.index === 0 ? '-start' : '-end';
-                    var blurrableElements = histogram.svg._node.querySelectorAll('.ct-grids, .ct-series');
-                    for (let element of blurrableElements) {
-                        element.setAttribute('filter', 'url("#blur")');
-                    }
-                    this.setAttribute('y', context.axis.chartRect.y1/2);
-                    this.setAttribute('x', context.axis.chartRect.x2/2);
-                    this.appendChild(labelInput(histogram, labelClass, this.children[0].innerHTML));
-                    this.removeChild(this.children[0]);
-                    histogram.svg._node.appendChild(this);
-                    this.children[0].focus();
-                    this.removeEventListener(e.type, labelEditHandler);
-                    // for some reason on mobile a resize event gets triggered, need to override this
-                    window.removeEventListener('resize', histogram.resizeListener);
-                    // this.removeEventListener('touchstart', labelEditHandler);
-                }
-
-                if (context.type === 'label') {
-                    if (context.index === 0 || context.index === context.axis.ticks.length - 1) {
-                        var element = context.element._node;
-                        element.classList.add('editable-label');
-                        // element.addEventListener('touchstart', labelEditHandler);
-                        element.addEventListener('click', labelEditHandler);
-                    }
-                }
-                if (context.type === 'point') {
-                    // prevent drawing bars off the chart
-                    var rectangle = new Chartist.Svg('rect', {
-                        x: Math.max(context.x, context.x - context.axisX.chartRect.padding.right),
-                        y: Math.max(context.y, context.axisY.chartRect.padding.top),
-                        // this is set via css
-                        width: 1,
-                        height: Math.max(0, Math.min(context.axisY.chartRect.y1 - context.y, context.axisY.chartRect.y1 - context.axisY.chartRect.padding.top)),
-                        'clip-path': 'url(#zoom-mask)',
-                        'ct:value': context.value.y,
-                        'ct:meta': context.meta,
-                        class: 'ct-tooltip'
-                    }, 'ct-bar ct-bar-histogram');
-                    context.element.replace(rectangle);
-                }
-            }).on('created', function(context){
-                // double click to reset zoom
-                context.svg._node.addEventListener('dblclick', function(){
-                    reset(histogram, options);
+            var defaultOptions = new getDefaultOptions(options, data);
+            var chart =  new Chartist.Line(selector, data, defaultOptions, responsiveOptions, pluginOptions)
+                .on('draw', function(context){
+                    customChartDraw(context, chart);
+                })
+                .on('created', function(context){
+                    customChartCreated(context, chart);
                 });
-                var defs = context.svg.elem('defs');
-                defs.elem('filter', {
-                    id: 'blur'
-                }).elem('feGaussianBlur', {
-                    in: 'SourceGraphic',
-                    stdDeviation: '2'
-                });
-                defs.elem('zoom-rect', {
-                    id: 'zoom-rect'
-                }).elem('feGaussianBlur', {
-                    in: 'SourceGraphic',
-                    stdDeviation: '2'
-                });
-            });
-            return histogram;
-        },
-        HistogramFit: function (selector, data, options = {}, responsiveOptions, pluginOptions) {
-
-            options.chartPadding = options.chartPadding ||
-                {
-                    top: 15,
-                    right: 15,
-                    bottom: 15,
-                    left: 15
-                };
-
-            options.plugins = options.plugins || [];
-            var existingPlugins = options.plugins.map(function(plugin){
-                return plugin.name;
-            });
-            if (existingPlugins.indexOf('ctAxisTitle') < 0) {
-                options.plugins.push(Chartist.plugins.ctAxisTitle({
-                    axisX: {
-                        axisTitle: data.xAxisLabel || '',
-                        axisClass: 'ct-axis-title',
-                        offset: {
-                            x: 0,
-                            y: 40
-                        },
-                        textAnchor: 'middle'
-                    },
-                    axisY: {
-                        axisTitle: data.yAxisLabel || '',
-                        axisClass: 'ct-axis-title',
-                        offset: {
-                            x: 0,
-                            y: 10
-                        },
-                        textAnchor: 'middle',
-                        flipTitle: true
-                    }
-                }));
-                options.plugins.push(Chartist.plugins.zoom({
-                    onZoom: function (chart, reset) {
-                        resetFnc = reset;
-                    }
-                }))
-            }
-
-            var barChartDiv = document.createElement('div');
-            barChartDiv.className = 'histogram-bar';
-            var lineChartDiv = document.createElement('div');
-            lineChartDiv.className = 'histogram-line';
-            var chartContainer = document.getElementById(selector.replace('#', ''));
-            chartContainer.appendChild(barChartDiv);
-            chartContainer.appendChild(lineChartDiv);
-
-            var lineChart =  new Chartist.Line(chartContainer.children[0], data, options).on('draw', function(context){
-                if (context.type === 'label') {
-                    if (context.index === 0 || context.index === context.axis.ticks.length - 1) {
-                        context.element._node.addEventListener('click', function(e) {
-                            this.removeChild(this.children[0]);
-                            this.appendChild(labelInput(lineChart));
-                            this.removeEventListener(e.type, arguments.callee);
-                        });
-                    }
-                }
-                if (context.type === 'point') {
-                    var rectangle = new Chartist.Svg('rect', {
-                        x: context.x,
-                        y: context.y,
-                        width: 10,
-                        height: 10
-                    }, 'ct-bar');
-                    context.element.replace(rectangle);
-                }
-            });
-
-            // var barChart =  new Chartist.Bar(chartContainer.children[1], data, options).on('draw', function(context){
-            //     if (context.type === 'label') {
-            //         if (context.index === 0 || context.index === context.axis.ticks.length - 1) {
-            //             context.element._node.addEventListener('click', function(e) {
-            //                 // console.log(this.children[0]);
-            //                 console.log('CLICK');
-            //                 console.log(e.target);
-            //                 this.removeChild(this.children[0]);
-            //                 this.appendChild(labelInput(barChart));
-            //                 this.removeEventListener(e.type, arguments.callee);
-            //             });
-            //         }
-            //     }
-            // });
-            return lineChart;
+            return chart;
         },
 
     };
