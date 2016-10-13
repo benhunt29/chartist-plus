@@ -981,3 +981,12 @@
   fill-opacity: 0;
   stroke: gray;
 }
+
+.chartist-tooltip {
+  background-color: darkgray;
+  color: #ffffff;
+}
+
+.chartist-tooltip:before {
+  background-color: darkgray;
+}

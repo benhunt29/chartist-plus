@@ -1,6 +1,7 @@
 //@import './node_modules/chartist/scss/chartist.scss';
 @import "variables/variables";
 @import "chartist";
+//@import './node_modules/chartist-plugin-tooltips/chartist-plugin-tooltip';
 
 .ct-label-edit {
   width: 5rem;
@@ -31,4 +32,13 @@
 .ct-zoom-rect {
   fill-opacity: 0;
   stroke: gray
+}
+
+// tooltip plugin overrrides
+.chartist-tooltip {
+  &:before {
+    background-color: darkgray;
+  }
+  background-color: darkgray;
+  color: #ffffff;
 }
