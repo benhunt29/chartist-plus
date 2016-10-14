@@ -114,7 +114,11 @@
             this.plugins.push(Chartist.plugins.zoom());
             this.plugins.push(Chartist.plugins.tooltip( {
                 pointClass: 'ct-tooltip',
-                anchorToPoint: true
+                anchorToPoint: true,
+                tooltipOffset: {
+                    y: 0,
+                    x: 0
+                }
             }));
         }
     }

@@ -989,5 +989,5 @@
 }
 
 .chartist-tooltip:before {
-  border-top-color: darkgray;
+  display: none;
 }
