@@ -113,7 +113,8 @@
             }));
             this.plugins.push(Chartist.plugins.zoom());
             this.plugins.push(Chartist.plugins.tooltip( {
-                pointClass: 'ct-tooltip'
+                pointClass: 'ct-tooltip',
+                anchorToPoint: true
             }));
         }
     }
