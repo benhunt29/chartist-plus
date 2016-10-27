@@ -1,14 +1,13 @@
 (function (root, factory) {
     module.exports = factory();
 }(this, function () {
-    var Chartist = require('chartist');
-    this.Chartist = Chartist;
-    require('chartist-plugin-axistitle');
-    require('chartist-plugin-tooltips');
-    require('chartist-plugin-zoom');
+    const Chartist = require('chartist');
+    //this.Chartist = Chartist; // TODO: Is this / should this be necessary?
+    const ctAxisTitle = require('chartist-plugin-axistitle');
+    const ctToolTips = require('chartist-plugin-tooltips');
+    const ctZoom = require('chartist-plugin-zoom');
 
     function labelInput(chart, labelClass, value) {
-
         var input = document.createElement('input');
         input.setAttribute('type', 'tel');
         input.className = labelClass + ' ct-label-edit ct-label ct-horizontal';
@@ -64,9 +63,11 @@
         return input;
     }
 
-    function reset(chart, options) {
+
+    const reset = (chart, options) => {
         chart.update(chart.data, options);
-    }
+    };
+
 
     function getDefaultOptions(options, data) {
         this.chartPadding = options.chartPadding ||
@@ -123,7 +124,9 @@
         }
     }
 
-    function customChartDraw(context, chart, type = 'scatter'){
+
+    function customChartDraw(context, chart, type) {
+        type = type || 'scatter';
         function labelEditHandler(e){
             var chartSvg = context.group._node.parentNode;
             var labelClass = context.axis.units.dir === 'vertical' ? 'y' : 'x';
@@ -193,26 +196,33 @@
         });
     }
 
-    var ChartistPlus = {
-        Histogram: function (selector, data, options = {}, responsiveOptions, pluginOptions) {
 
-            var defaultOptions = new getDefaultOptions(options, data);
-            var chart =  new Chartist.Line(selector, data, defaultOptions, responsiveOptions, pluginOptions)
-                .on('draw', function(context){
+    const ChartistPlus = {
+        Histogram(selector, data, options, responsiveOptions, pluginOptions) {
+            options = options || {};
+            //console.log('[DEBUG] ChartistPlus::Histogram', selector, data, options, responsiveOptions, pluginOptions);
+
+            let defaultOptions = new getDefaultOptions(options, data);
+
+            let chart = new Chartist.Line(selector, data, defaultOptions, responsiveOptions, pluginOptions)
+                .on('draw', (context) => {
                     customChartDraw(context, chart, 'histogram');
                 })
-                .on('created', function(context){
+                .on('created', (context) => {
                     customChartCreated(context, chart);
                 });
             return chart;
         },
-        Scatter: function (selector, data, options = {}, responsiveOptions, pluginOptions) {
+        Scatter(selector, data, options, responsiveOptions, pluginOptions) {
+            options = options || {};
+            //console.log('[DEBUG] ChartistPlus::Scatter', selector, data, options, responsiveOptions, pluginOptions);
 
-            function reset(chart, options) {
+            const reset = (chart, options) => {
                 chart.update(chart.data, options);
-            }
-            var defaultOptions = new getDefaultOptions(options, data);
-            var chart =  new Chartist.Line(selector, data, defaultOptions, responsiveOptions, pluginOptions)
+            };
+
+            let defaultOptions = new getDefaultOptions(options, data);
+            let chart = new Chartist.Line(selector, data, defaultOptions, responsiveOptions, pluginOptions)
                 .on('draw', function(context){
                     customChartDraw(context, chart);
                 })
@@ -220,8 +230,8 @@
                     customChartCreated(context, chart);
                 });
             return chart;
-        },
-
+        }
     };
+
     return ChartistPlus;
 }));
