@@ -2,7 +2,7 @@
     module.exports = factory();
 }(this, function () {
     const Chartist = require('chartist');
-    //this.Chartist = Chartist; // TODO: Is this / should this be necessary?
+    this.Chartist = Chartist; // The leaks the `Chartist` global so that plugins (which require/expect it) work
     const ctAxisTitle = require('chartist-plugin-axistitle');
     const ctToolTips = require('chartist-plugin-tooltips');
     const ctZoom = require('chartist-plugin-zoom');
