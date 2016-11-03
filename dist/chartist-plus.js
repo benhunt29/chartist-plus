@@ -1,11 +1,11 @@
 (function (root, factory) {
     module.exports = factory();
-}(this, function () {
-    const Chartist = require('chartist');
+})(global, function () {
+    var Chartist = require('chartist');
     this.Chartist = Chartist; // The leaks the `Chartist` global so that plugins (which require/expect it) work
-    const ctAxisTitle = require('chartist-plugin-axistitle');
-    const ctToolTips = require('chartist-plugin-tooltips');
-    const ctZoom = require('chartist-plugin-zoom');
+    var ctAxisTitle = require('chartist-plugin-axistitle');
+    var ctToolTips = require('chartist-plugin-tooltips');
+    var ctZoom = require('chartist-plugin-zoom');
 
     function labelInput(chart, labelClass, value) {
         var input = document.createElement('input');
@@ -14,7 +14,7 @@
         input.value = value;
 
         // chart.svg._node.querySelector('.chart-area').style.display = 'none';
-        function clearZoom(){
+        function clearZoom() {
             chart.options.axisX.highLow = null;
             chart.options.axisY.highLow = null;
         }
@@ -63,31 +63,45 @@
         return input;
     }
 
-
-    const reset = (chart, options) => {
+    var reset = function reset(chart, options) {
         chart.update(chart.data, options);
     };
 
+    var getHistogramTicks = function getHistogramTicks(labels) {
+        return labels.map(function (label) {
+            return label.split('-')[0].replace(/[^0-9]/, '');
+        });
+    };
 
-    function getDefaultOptions(options, data) {
-        this.chartPadding = options.chartPadding ||
-            {
-                top: 15,
-                right: 20,
-                bottom: 15,
-                left: 20
-            };
-        var xhighLow = Chartist.getHighLow(data.series, options, 'x')
-        this.showLine = false;
-        this.axisX = {
-            type: Chartist.AutoScaleAxis,
-            onlyInteger: false,
-            scaleMinSpace: 50,
-            high: 1.02*xhighLow.high,
-            low: 0.98*xhighLow.low
+    function getDefaultOptions(options, data, type) {
+        this.chartPadding = options.chartPadding || {
+            top: 15,
+            right: 20,
+            bottom: 15,
+            left: 20
         };
+        var xhighLow = Chartist.getHighLow(data.series, options, 'x');
+        this.showLine = false;
+        if (type === 'histogram') {
+            var ticks = getHistogramTicks(data.labels);
+            this.axisX = {
+                type: Chartist.FixedScaleAxis,
+                onlyInteger: false,
+                high: 1.02 * ticks[ticks.length - 1],
+                low: 0.98 * ticks[0],
+                ticks: ticks
+            };
+        } else {
+            this.axisX = {
+                type: Chartist.AutoScaleAxis,
+                onlyInteger: false,
+                scaleMinSpace: 50,
+                high: 1.02 * xhighLow.high,
+                low: 0.98 * xhighLow.low
+            };
+        }
         this.plugins = options.plugins || [];
-        var existingPlugins = this.plugins.map(function(plugin){
+        var existingPlugins = this.plugins.map(function (plugin) {
             return plugin.name;
         });
         if (existingPlugins.indexOf('ctAxisTitle') < 0) {
@@ -113,7 +127,7 @@
                 }
             }));
             this.plugins.push(Chartist.plugins.zoom());
-            this.plugins.push(Chartist.plugins.tooltip( {
+            this.plugins.push(Chartist.plugins.tooltip({
                 pointClass: 'ct-tooltip',
                 anchorToPoint: true,
                 tooltipOffset: {
@@ -124,19 +138,40 @@
         }
     }
 
-
     function customChartDraw(context, chart, type) {
         type = type || 'scatter';
-        function labelEditHandler(e){
+        function labelEditHandler(e) {
             var chartSvg = context.group._node.parentNode;
             var labelClass = context.axis.units.dir === 'vertical' ? 'y' : 'x';
             labelClass += context.index === 0 ? '-start' : '-end';
             var blurrableElements = chartSvg.querySelectorAll('.ct-grids, .ct-series');
-            for (let element of blurrableElements) {
-                element.setAttribute('filter', 'url("#blur")');
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = blurrableElements[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var _element = _step.value;
+
+                    _element.setAttribute('filter', 'url("#blur")');
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
             }
-            this.setAttribute('y', context.axis.chartRect.y1/2);
-            this.setAttribute('x', context.axis.chartRect.x2/2);
+
+            this.setAttribute('y', context.axis.chartRect.y1 / 2);
+            this.setAttribute('x', context.axis.chartRect.x2 / 2);
             this.appendChild(labelInput(chart, labelClass, this.children[0].innerHTML));
             this.removeChild(this.children[0]);
             chartSvg.appendChild(this);
@@ -153,6 +188,9 @@
                 element.classList.add('editable-label');
                 // element.addEventListener('touchstart', labelEditHandler);
                 element.addEventListener('click', labelEditHandler);
+            }
+            if (type === 'histogram') {
+                context.text = chart.data.labels[context.index];
             }
         }
         if (context.type === 'point') {
@@ -176,10 +214,10 @@
         }
     }
 
-    function customChartCreated(context, chart) {
+    function customChartCreated(context, chart, chartType) {
         // double click to reset zoom
-        context.svg._node.addEventListener('dblclick', function(){
-            reset(chart, new getDefaultOptions(chart.options, chart.data));
+        context.svg._node.addEventListener('dblclick', function () {
+            reset(chart, new getDefaultOptions(chart.options, chart.data, chartType));
         });
         var defs = context.svg.elem('defs');
         defs.elem('filter', {
@@ -196,42 +234,37 @@
         });
     }
 
-
-    const ChartistPlus = {
-        Histogram(selector, data, options, responsiveOptions, pluginOptions) {
+    var ChartistPlus = {
+        Histogram: function Histogram(selector, data, options, responsiveOptions, pluginOptions) {
             options = options || {};
             //console.log('[DEBUG] ChartistPlus::Histogram', selector, data, options, responsiveOptions, pluginOptions);
+            var chartType = 'histogram';
+            var defaultOptions = new getDefaultOptions(options, data, chartType);
 
-            let defaultOptions = new getDefaultOptions(options, data);
-
-            let chart = new Chartist.Line(selector, data, defaultOptions, responsiveOptions, pluginOptions)
-                .on('draw', (context) => {
-                    customChartDraw(context, chart, 'histogram');
-                })
-                .on('created', (context) => {
-                    customChartCreated(context, chart);
-                });
+            var chart = new Chartist.Line(selector, data, defaultOptions, responsiveOptions, pluginOptions).on('draw', function (context) {
+                customChartDraw(context, chart, chartType);
+            }).on('created', function (context) {
+                customChartCreated(context, chart, chartType);
+            });
             return chart;
         },
-        Scatter(selector, data, options, responsiveOptions, pluginOptions) {
+        Scatter: function Scatter(selector, data, options, responsiveOptions, pluginOptions) {
             options = options || {};
             //console.log('[DEBUG] ChartistPlus::Scatter', selector, data, options, responsiveOptions, pluginOptions);
 
-            const reset = (chart, options) => {
+            var reset = function reset(chart, options) {
                 chart.update(chart.data, options);
             };
 
-            let defaultOptions = new getDefaultOptions(options, data);
-            let chart = new Chartist.Line(selector, data, defaultOptions, responsiveOptions, pluginOptions)
-                .on('draw', function(context){
-                    customChartDraw(context, chart);
-                })
-                .on('created', function(context){
-                    customChartCreated(context, chart);
-                });
+            var defaultOptions = new getDefaultOptions(options, data);
+            var chart = new Chartist.Line(selector, data, defaultOptions, responsiveOptions, pluginOptions).on('draw', function (context) {
+                customChartDraw(context, chart);
+            }).on('created', function (context) {
+                customChartCreated(context, chart);
+            });
             return chart;
         }
     };
 
     return ChartistPlus;
-}));
+});
