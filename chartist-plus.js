@@ -68,8 +68,20 @@
     };
 
     var getHistogramTicks = function getHistogramTicks(labels) {
-        return labels.map(function (label) {
-            return label.split('-')[0].replace(/[^0-9]/, '');
+        return labels.map(function (label, index) {
+            if (index === 0 && label.indexOf('<') === 0) {
+                return '0';
+            } else {
+                return label.split('-')[0].replace(/[^0-9]/, '');
+            }
+        });
+    };
+
+    var transformHistogramData = function transformHistogramData(series, ticks) {
+        return series.map(function (set, index) {
+            return set.map(function (y, ind) {
+                return { x: parseInt(ticks[ind]), y: y };
+            });
         });
     };
 
@@ -80,10 +92,10 @@
             bottom: 15,
             left: 20
         };
-        var xhighLow = Chartist.getHighLow(data.series, options, 'x');
         this.showLine = false;
         if (type === 'histogram') {
             var ticks = getHistogramTicks(data.labels);
+            data.series = transformHistogramData(data.series, ticks);
             this.axisX = {
                 type: Chartist.FixedScaleAxis,
                 onlyInteger: false,
@@ -92,6 +104,7 @@
                 ticks: ticks
             };
         } else {
+            var xhighLow = Chartist.getHighLow(data.series, options, 'x');
             this.axisX = {
                 type: Chartist.AutoScaleAxis,
                 onlyInteger: false,
@@ -138,7 +151,7 @@
         }
     }
 
-    function customChartDraw(context, chart, type) {
+    function customChartDraw(context, chart, type, options) {
         type = type || 'scatter';
         function labelEditHandler(e) {
             var chartSvg = context.group._node.parentNode;
@@ -183,21 +196,24 @@
         }
 
         if (context.type === 'label') {
+            var element = context.element._node;
             if (context.index === 0 || context.index === context.axis.ticks.length - 1) {
-                var element = context.element._node;
                 element.classList.add('editable-label');
                 // element.addEventListener('touchstart', labelEditHandler);
                 element.addEventListener('click', labelEditHandler);
             }
-            if (type === 'histogram') {
+            if (type === 'histogram' && context.axis.constructor.name === 'FixedScaleAxis') {
                 context.text = chart.data.labels[context.index];
+                element.childNodes[0].innerHTML = chart.data.labels[context.index];
+                // context.group.elem('text') = chart.data.labels[context.index];
             }
         }
         if (context.type === 'point') {
             // prevent drawing bars off the chart
             if (type === 'histogram') {
+                context.value.x = chart.options.axisX.ticks[context.index];
                 var rectangle = new Chartist.Svg('rect', {
-                    x: Math.max(context.x, context.x - context.axisX.chartRect.padding.right),
+                    x: Math.max(context.x - (options.barWidth / 2 || 0), context.x - context.axisX.chartRect.padding.right),
                     y: Math.max(context.y, context.axisY.chartRect.padding.top),
                     // this is set via css
                     width: 1,
@@ -242,7 +258,7 @@
             var defaultOptions = new getDefaultOptions(options, data, chartType);
 
             var chart = new Chartist.Line(selector, data, defaultOptions, responsiveOptions, pluginOptions).on('draw', function (context) {
-                customChartDraw(context, chart, chartType);
+                customChartDraw(context, chart, chartType, options);
             }).on('created', function (context) {
                 customChartCreated(context, chart, chartType);
             });
