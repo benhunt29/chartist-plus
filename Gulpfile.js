@@ -34,11 +34,11 @@ gulp.task('scripts', function() {
         ],
         context: 'global'
     }))
-    .pipe(gulp.dest('./dist'));
+    .pipe(gulp.dest('.'));
 });
 
 gulp.task('css', ['sass'], function() {
    return gulp.src(['node_modules/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.css', './src/chartist-plus.css'])
        .pipe(concatCss('chartist-plus.css'))
-       .pipe(gulp.dest('./dist', {overwrite: true}))
+       .pipe(gulp.dest('.', {overwrite: true}))
 });
